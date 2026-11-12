@@ -1,0 +1,7 @@
+{application, skillbridge,
+ [{description, "A local, time-credit-powered community skill exchange"},
+  {vsn, "1.0.0"},
+  {registered, [skillbridge_sup, skillbridge_store, skillbridge_http]},
+  {mod, {skillbridge_app, []}},
+  {applications, [kernel, stdlib, crypto, inets]},
+  {env, [{port, 8080}]}]}.

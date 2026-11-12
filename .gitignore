@@ -1,0 +1,15 @@
+# Erlang build output
+/ebin/
+/_build/
+/.rebar3/
+
+# Local application data and Erlang crash dumps
+/data/*.dets
+/data/*.backup
+/erl_crash.dump
+erl_crash.dump
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+.vscode/
