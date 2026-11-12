@@ -1,10 +1,10 @@
 # SkillBridge
 
-SkillBridge is a neighbourhood skill exchange: learn a neighbour's useful skill and pay them back in time credits, never money. This repository contains a complete, dependency-free Erlang/OTP application and responsive browser interface.
+SkillBridge is a neighbourhood skill exchange: learn a neighbour's useful skill and pay them back in time credits, never money. This repository contains a locally runnable Erlang/OTP MVP and responsive browser interface, with no third-party Erlang dependencies.
 
 ## Getting started
 
-Install Erlang/OTP with its `crypto` application and [Rebar3](https://rebar3.org/). OTP 21 or newer is recommended. The application has no third-party dependencies and includes a fallback JSON codec for older Erlang versions.
+Install Erlang/OTP 24 or newer and [Rebar3](https://rebar3.org/). The application includes a fallback JSON codec when a standard JSON module is unavailable.
 
 ```powershell
 rebar3 shell
@@ -39,7 +39,7 @@ Use `SKILLBRIDGE_PORT` to select an alternate local port. Set `SKILLBRIDGE_DATA`
 4. Both people confirm the exchange. SkillBridge then awards the helper one credit per hour and deducts the same amount from the learner.
 5. Spend your earned time credits with any participating neighbour.
 
-New members start with three community credits so someone can ask for help before earning their first credits. People can search and browse without registering. Matching highlights offers that meet the signed-in member's learning needs, prioritizes nearby neighbours, and supports sorting by relevance, credits, or membership date. The local profile and conversations remain usable even without a reachable backend.
+New members start with three community credits so someone can ask for help before earning their first credits. People can search and browse without registering. Matching highlights offers that meet the signed-in member's learning needs, prioritizes nearby neighbours, and supports sorting by relevance, credits, or membership date. Without a reachable backend, the browser falls back to local demo data in that browser's local storage; this data is not shared with other members or verified by the server.
 
 ## Feature overview
 
@@ -49,8 +49,8 @@ New members start with three community credits so someone can ask for help befor
 - **Time credits:** On the second confirmation, debit the learner's balance and credit the helper's balance as one durable transaction.
 - **Messages:** Send neighbourhood members messages of up to 1,000 characters and review previous conversations.
 - **Trust:** Show ratings, keep a member-initiated conduct reporting path, and surface practical first-meeting advice.
-- **Languages:** Switch between English, Swedish, and French; remember the selected language and use the browser language as a first-visit default.
-- **Mobile and accessibility:** Use responsive layouts, semantic forms, descriptive control labels, visible keyboard focus, searchable results, and keyboard shortcuts. Press `Ctrl+K` or `⌘K` to search; press `Escape` to close a dialog.
+- **Languages:** Switch the interface between English, Swedish, and French; remember the selected language and use the browser language as a first-visit default. Member-written biographies and messages stay in the language their authors entered them.
+- **Mobile and accessibility:** The interface adapts from narrow mobile screens through desktop widths, with semantic forms, descriptive control labels, visible keyboard focus, and searchable results. Press `Ctrl+K` or `⌘K` to focus search; press `Escape` to close a dialog.
 
 ## HTTP API
 
@@ -90,16 +90,18 @@ src/
   skillbridge_sup.erl     Supervision tree
   skillbridge_store.erl   Serialized domain operations and DETS persistence
   skillbridge_http.erl    Concurrent standard-library HTTP server and JSON API
-  skillbridge_json.erl   JSON compatibility codec for older OTP versions
+  skillbridge_json.erl    JSON compatibility codec
 priv/static/
-  index.html              Accessible product structure and illustration
+  index.html              Product structure and interface
+  presentation.css        Responsive page presentation
   styles.css              Responsive visual system
   app.js                  Search, matching, messages, exchanges, and dialogs
   favicon.svg
+.gitignore                Build, local data, and crash dump exclusions
 ```
 
 DETS writes and syncs the community state for each operation. A single supervised store serializes exchange confirmation and credit settlement to prevent double spending. The HTTP listener spawns a process per connection. Browser network calls use the same-origin API, and browser local storage allows interactive design review when the OTP server is not running.
 
 ## Trust and deployment
 
-This is a complete, locally runnable MVP and a foundation for a real community service. Before operating it for real members, add account verification, authentication and authorization, CSRF protection, rate limiting, real consent-based trust signals, abuse review and appeals, private backups, and monitored HTTPS behind a production reverse proxy. Demo members use fictional `example.local` contact details and are for local product preview. The default listener binds to localhost and is **not** an authenticated public service. Browser offline data belongs to that browser and should not be considered a verified community record.
+This is a locally runnable MVP, not a production-ready community service. The current session lookup uses an email address without authentication, and API actions trust member IDs supplied by the client. Before operating it for real members, add account verification, authentication and authorization, CSRF protection, rate limiting, real consent-based trust signals, abuse review and appeals, private backups, and monitored HTTPS behind a production reverse proxy. Demo members use fictional `example.local` contact details and are for local product preview. The default listener binds to localhost and is **not** an authenticated public service. Browser offline data belongs to that browser and should not be considered a verified community record.
